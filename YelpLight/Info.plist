@@ -36,6 +36,14 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>YELP_LIGHT_CONSUMER_KEY</key>
+	<string>$(YELP_LIGHT_CONSUMER_KEY)</string>
+	<key>YELP_LIGHT_CONSUMER_SECRET</key>
+	<string>$(YELP_LIGHT_CONSUMER_SECRET)</string>
+	<key>YELP_LIGHT_ACCESS_TOKEN</key>
+	<string>$(YELP_LIGHT_ACCESS_TOKEN)</string>
+	<key>YELP_LIGHT_ACCESS_SECRET</key>
+	<string>$(YELP_LIGHT_ACCESS_SECRET)</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
