@@ -3,6 +3,7 @@
 This is a light app for finding and detailing location information. [Yelp API](http://www.yelp.com/developers).
 
 Time spent: X
+* Project setup: ~1 hr (researching & implementing Yelp oauth)
 
 ### Features
 
