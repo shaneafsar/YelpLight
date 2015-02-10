@@ -17,10 +17,10 @@ class YelpClient: BDBOAuth1RequestOperationManager {
         struct Static {
             private static let bundle = NSBundle.mainBundle()
             static let instance : YelpClient = YelpClient(
-                consumerKey: bundle.objectForInfoDictionaryKey("YELP_LIGHT_CONSUMER_KEY") as NSString,
-                consumerSecret: bundle.objectForInfoDictionaryKey("YELP_LIGHT_CONSUMER_SECRET") as NSString,
-                accessToken: bundle.objectForInfoDictionaryKey("YELP_LIGHT_ACCESS_TOKEN") as NSString,
-                accessSecret: bundle.objectForInfoDictionaryKey("YELP_LIGHT_ACCESS_SECRET") as NSString
+                consumerKey: bundle.objectForInfoDictionaryKey("YELP_LIGHT_CONSUMER_KEY") as! String,
+                consumerSecret: bundle.objectForInfoDictionaryKey("YELP_LIGHT_CONSUMER_SECRET") as! String,
+                accessToken: bundle.objectForInfoDictionaryKey("YELP_LIGHT_ACCESS_TOKEN") as! String,
+                accessSecret: bundle.objectForInfoDictionaryKey("YELP_LIGHT_ACCESS_SECRET") as! String
             )
         }
         return Static.instance
