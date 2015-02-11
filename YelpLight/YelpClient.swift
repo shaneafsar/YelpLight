@@ -47,6 +47,7 @@ class YelpClient: BDBOAuth1RequestOperationManager {
     
 }
 
+/*
 class YelpCategories{
     let categories = [["name" : "Afghan", "code": "afghani"],
         ["name" : "African", "code": "african"],
@@ -218,3 +219,4 @@ class YelpCategories{
         ["name" : "Wraps", "code": "wraps"],
         ["name" : "Yugoslav", "code": "yugoslav"]];
 }
+*/

@@ -373,6 +373,7 @@
 /* Begin XCBuildConfiguration section */
 		2D986E4D1A885FC8009DA43C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2D986E5F1A8877E1009DA43C /* YelpLightConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -416,6 +417,7 @@
 		};
 		2D986E4E1A885FC8009DA43C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2D986E5F1A8877E1009DA43C /* YelpLightConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";

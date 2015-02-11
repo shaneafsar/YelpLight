@@ -14,6 +14,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @IBOutlet weak var filterButton: UIBarButtonItem!
     
+    var Businesses:NSArray?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,12 +33,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return Businesses?.count ?? 0
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("YelpBusinessCell") as! YelpBusinessCell
-        cell.bizTitle.text = "Yelper!"
+        if let businesses = Businesses{
+            cell.bizTitle.text = businesses[indexPath.row]["name"] as? String
+        }
         return cell
     }
     
@@ -46,13 +50,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             location: "Mountain View",
             success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
 
-                let businesses = response["businesses"] as! NSArray
+                self.Businesses = response["businesses"] as? NSArray
             
-                for business in businesses {
-                    //business["image_url"]
-                    //business["mobile_url"]
-                    println(business["name"])
+                if let businesses = self.Businesses{
+                    for business in businesses {
+                        //business["image_url"]
+                        //business["mobile_url"]
+                        println(business["name"])
+                    }
                 }
+                
+                self.tableView.reloadData()
 
             },
             failure: { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
