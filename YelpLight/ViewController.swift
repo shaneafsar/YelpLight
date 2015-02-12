@@ -23,6 +23,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.dataSource = self
         tableView.delegate = self
         
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 100
+        
         filterButton.title = "Filter"
         getBusinessResults("chi")
     }
@@ -40,8 +43,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCellWithIdentifier("YelpBusinessCell") as! YelpBusinessCell
         if let businesses = Businesses{
             cell.bizTitle.text = businesses[indexPath.row]["name"] as? String
+            cell.bizDistance.text = "0.1 mi"
         }
+        cell.sizeToFit()
         return cell
+    }
+    
+    func getBusinessResultsTest(){
+        self.Businesses = [
+            ["name":"Yelp long name"],
+            ["name":"Yelp again okay, let's hope this wraps to the next line"],
+            ["name":"In-N-Out"]
+        ]
     }
     
     func getBusinessResults(searchTerm: String) -> Void {
@@ -56,6 +69,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     for business in businesses {
                         //business["image_url"]
                         //business["mobile_url"]
+                        //business["rating_img_url"]
+                        //business["review_count"]
                         println(business["name"])
                     }
                 }
@@ -64,9 +79,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
             },
             failure: { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                self.getBusinessResultsTest()
+                self.tableView.reloadData()
                 println(error)
                 println("crap!!")
             })
+        //self.tableView.rowHeight = UITableViewAutomaticDimension
     }
 
 

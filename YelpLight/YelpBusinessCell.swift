@@ -12,11 +12,16 @@ class YelpBusinessCell: UITableViewCell {
     
     @IBOutlet weak var bizImage: UIImageView!
     
+    @IBOutlet weak var bizDistance: UILabel!
+    
     @IBOutlet weak var bizTitle: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        //bizTitle.sizeToFit()
+        //self.contentView.sizeToFit()
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
