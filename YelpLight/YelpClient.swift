@@ -8,6 +8,7 @@
 //  Copyright (c) 2015 codepath. All rights reserved.
 //
 
+
 class YelpClient: BDBOAuth1RequestOperationManager {
     var accessToken: String!
     var accessSecret: String!
@@ -44,6 +45,21 @@ class YelpClient: BDBOAuth1RequestOperationManager {
         var parameters = ["term": term, "location": location]
         return self.GET("search", parameters: parameters, success: success, failure: failure)
     }
+    
+    func trySearchWithTermCurrentLocation(term: String, location: String, lat:String?, long:String?, success: (AFHTTPRequestOperation!, AnyObject!) -> Void, failure: (AFHTTPRequestOperation!, NSError!) -> Void) -> AFHTTPRequestOperation!{
+    
+
+        if let latty = lat, let longy = long{
+            var parameters = ["term": term]
+            
+            println("cll=\(latty),\(longy)")
+    
+            return self.GET("search?term=chi&ll=37.77493,-122.419415", parameters: nil, success: success, failure: failure)
+        }
+        println("Sorry, location not available")
+        return searchWithTerm(term, location: location, success: success, failure: failure)
+    }
+    
     
 }
 

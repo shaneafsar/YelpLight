@@ -16,6 +16,12 @@ class YelpBusinessCell: UITableViewCell {
     
     @IBOutlet weak var bizTitle: UILabel!
     
+    @IBOutlet weak var bizRatingImage: UIImageView!
+    
+    @IBOutlet weak var bizAddress: UILabel!
+    
+    @IBOutlet weak var bizCategory: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -28,6 +34,20 @@ class YelpBusinessCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    func setProperties(business:Business){
+        bizTitle.text = business.title
+        bizDistance.text = "0.1 mi"
+        bizImage.setImageWithURL(business.imageNsUrl)
+        bizRatingImage.setImageWithURL(business.ratingImageNsUrl)
+    }
+    
+    func setProperties(business:Business, number:Int){
+        setProperties(business)
+        if let title = business.title {
+            bizTitle.text = "\(String(number)). \(title)"
+        }
     }
 
 }

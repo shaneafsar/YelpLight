@@ -7,14 +7,17 @@
 //
 
 import UIKit
+import CoreLocation
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var filterButton: UIBarButtonItem!
     
-    var Businesses:NSArray?
+    var locManager = CLLocationManager()
+
+    var Businesses:[Business]?
     
     
     override func viewDidLoad() {
@@ -27,7 +30,25 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.estimatedRowHeight = 100
         
         filterButton.title = "Filter"
-        getBusinessResults("chi")
+        
+        
+        locManager.delegate = self
+        locManager.requestWhenInUseAuthorization()
+        locManager.startUpdatingLocation()
+        
+        if(CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse){
+            
+            var currentCoord = locManager.location.coordinate
+            println("\(currentCoord.longitude)")
+
+            getBusinessResults("chi", lat: String(format: "%f", currentCoord.latitude) , long: String(format: "%f", currentCoord.longitude))
+        }else{
+            getBusinessResults("chi", lat:nil, long:nil)
+            println("not authorized")
+        }
+        
+
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,37 +62,37 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("YelpBusinessCell") as! YelpBusinessCell
+        
         if let businesses = Businesses{
-            cell.bizTitle.text = businesses[indexPath.row]["name"] as? String
-            cell.bizDistance.text = "0.1 mi"
+            var index = indexPath.row
+            cell.setProperties(businesses[indexPath.row], number: index+1)
         }
+        
         cell.sizeToFit()
         return cell
     }
     
     func getBusinessResultsTest(){
         self.Businesses = [
-            ["name":"Yelp long name"],
-            ["name":"Yelp again okay, let's hope this wraps to the next line"],
-            ["name":"In-N-Out"]
+            Business(data: ["name":"Yelp long name"]),
+            Business(data: ["name":"Yelp again okay, let's hope this wraps to the next line"]),
+            Business(data: ["name":"In-N-Out"])
         ]
     }
     
-    func getBusinessResults(searchTerm: String) -> Void {
-        YelpClient.sharedInstance.searchWithTerm(
+    func getBusinessResults(searchTerm: String, lat:String?, long:String?) -> Void {
+        YelpClient.sharedInstance.trySearchWithTermCurrentLocation(
             searchTerm,
             location: "Mountain View",
+            lat: lat,
+            long: long,
             success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-
-                self.Businesses = response["businesses"] as? NSArray
             
+                self.Businesses <<<<* response["businesses"]
+                
                 if let businesses = self.Businesses{
                     for business in businesses {
-                        //business["image_url"]
-                        //business["mobile_url"]
-                        //business["rating_img_url"]
-                        //business["review_count"]
-                        println(business["name"])
+                        println(business.title)
                     }
                 }
                 

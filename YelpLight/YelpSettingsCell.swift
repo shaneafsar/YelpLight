@@ -16,6 +16,9 @@ class YelpSettingsCell: UITableViewCell {
     
     weak var delegate:YelpSettingsCellDelegate?
 
+    @IBOutlet weak var optionSwitch: UISwitch!
+    
+    @IBOutlet weak var settingsLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -26,6 +29,10 @@ class YelpSettingsCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
         
         // Configure the view for the selected state
+    }
+    
+    func onChange(cell:YelpSettingsCell, value:Bool){
+        optionSwitch.on = value
     }
     
 }

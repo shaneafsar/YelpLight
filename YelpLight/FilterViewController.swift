@@ -8,10 +8,20 @@
 
 import UIKit
 
-class FilterViewController: UIViewController {
+class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    @IBOutlet weak var tableView: UITableView!
+
+    var settings:NSDictionary?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.estimatedRowHeight = 75
+        
 
         // Do any additional setup after loading the view.
     }
@@ -19,6 +29,17 @@ class FilterViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("YelpSettingsCell") as! YelpSettingsCell;
+        cell.settingsLabel.text = "Setting \(indexPath.row)"
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 5
     }
     
 
