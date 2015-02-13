@@ -50,14 +50,16 @@ class YelpBusinessCell: UITableViewCell {
         bizTitle.text = business.title
         bizDistance.text = getMilesString(business)
         bizImage.setImageWithURL(business.imageNsUrl)
+        bizImage.backgroundColor = UIColor.clearColor()
         bizRatingImage.setImageWithURL(business.ratingImageNsUrl)
+        bizRatingImage.backgroundColor = UIColor.clearColor()
         bizAddress.text = business.location?.singleDisplayAddress
         bizCategory.text = business.categoriesAsSingle
         if let count = business.reviews{
             if count != 1{
                 bizReviewCount.text = "\(String(count)) reviews"
             }else{
-                bizReviewCount.text = "\(String(count)) reviews"
+                bizReviewCount.text = "\(String(count)) review"
             }
         }else{
             bizReviewCount.text = "No reviews"

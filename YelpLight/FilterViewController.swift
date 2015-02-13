@@ -21,6 +21,7 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         self.tableView.dataSource = self
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 75
+        tableView.tableFooterView = UIView(frame:CGRectZero)
         
 
         // Do any additional setup after loading the view.

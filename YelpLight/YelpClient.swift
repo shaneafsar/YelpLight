@@ -52,6 +52,11 @@ class YelpClient: BDBOAuth1RequestOperationManager {
         return self.GET("search", parameters: parameters, success: success, failure: failure)
     }
     
+    func searchWithTerm(term: String, location: String, limit:Int, offset:Int, success: (AFHTTPRequestOperation!, AnyObject!) -> Void, failure: (AFHTTPRequestOperation!, NSError!) -> Void) -> AFHTTPRequestOperation! {
+        var parameters = ["term": term, "location": location, "limit": limit, "offset": offset]
+        return self.GET("search", parameters: parameters, success: success, failure: failure)
+    }
+    
     //
     //Doing this to get around Xcode's weird indexing issue
     //
