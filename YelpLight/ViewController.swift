@@ -16,6 +16,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var filterButton: UIBarButtonItem!
     
     var locManager = CLLocationManager()
+    
+    var lat:Double?{
+        var _lat:Double?
+        if(CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse){
+            _lat = locManager.location.coordinate.latitude
+        }
+        return _lat
+    }
+    var long:Double?{
+        var _num:Double?
+        if(CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse){
+            _num = locManager.location.coordinate.longitude
+        }
+        return _num
+    }
 
     var Businesses:[Business]?
     
@@ -36,16 +51,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         locManager.requestWhenInUseAuthorization()
         locManager.startUpdatingLocation()
         
-        if(CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse){
-            
-            var currentCoord = locManager.location.coordinate
-            println("\(currentCoord.longitude)")
 
-            getBusinessResults("chi", lat: String(format: "%f", currentCoord.latitude) , long: String(format: "%f", currentCoord.longitude))
-        }else{
-            getBusinessResults("chi", lat:nil, long:nil)
-            println("not authorized")
-        }
+        getBusinessResults("chipotle")
         
 
         
@@ -65,7 +72,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if let businesses = Businesses{
             var index = indexPath.row
-            cell.setProperties(businesses[indexPath.row], number: index+1)
+            cell.setProperties(businesses[index], number: index+1)
         }
         
         cell.sizeToFit()
@@ -80,18 +87,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         ]
     }
     
-    func getBusinessResults(searchTerm: String, lat:String?, long:String?) -> Void {
-        YelpClient.sharedInstance.trySearchWithTermCurrentLocation(
+    func getBusinessResults(searchTerm: String) -> Void {
+        YelpClient.sharedInstance.searchWithTerm(
             searchTerm,
-            location: "Mountain View",
-            lat: lat,
-            long: long,
+            location: "San Francisco",
             success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-            
+                
+                var test = response["businesses"]
+                println("\(test)")
                 self.Businesses <<<<* response["businesses"]
                 
                 if let businesses = self.Businesses{
                     for business in businesses {
+                        business.userLocationLat = self.lat
+                        business.userLocationLon = self.long
                         println(business.title)
                     }
                 }
@@ -105,7 +114,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 println(error)
                 println("crap!!")
             })
-        //self.tableView.rowHeight = UITableViewAutomaticDimension
     }
 
 

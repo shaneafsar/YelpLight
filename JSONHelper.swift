@@ -189,6 +189,15 @@ public func <<<* (inout array: [Int], value: AnyObject?) -> [Int] {
     return array
 }
 
+public func <<<* (inout array: [[String]]?, value: AnyObject?) -> [[String]]? {
+    if let stringArrayOfArray = value as? [[String]]{
+        array = stringArrayOfArray
+    } else{
+        array = nil
+    }
+    return array
+}
+
 public func <<<* (inout array: [Float]?, value: AnyObject?) -> [Float]? {
     
     if let floatArray = value as? [Float] {

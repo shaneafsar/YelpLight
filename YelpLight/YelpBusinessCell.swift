@@ -22,6 +22,8 @@ class YelpBusinessCell: UITableViewCell {
     
     @IBOutlet weak var bizCategory: UILabel!
     
+    @IBOutlet weak var bizReviewCount: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -36,11 +38,31 @@ class YelpBusinessCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    func getMilesString(business:Business) -> String?{
+        var s:String? = nil
+        if let f = business.distanceTo{
+            s = NSString(format: "%.2f mi", f) as String?
+        }
+        return s
+    }
+    
     func setProperties(business:Business){
         bizTitle.text = business.title
-        bizDistance.text = "0.1 mi"
+        bizDistance.text = getMilesString(business)
         bizImage.setImageWithURL(business.imageNsUrl)
         bizRatingImage.setImageWithURL(business.ratingImageNsUrl)
+        bizAddress.text = business.location?.singleDisplayAddress
+        bizCategory.text = business.categoriesAsSingle
+        if let count = business.reviews{
+            if count != 1{
+                bizReviewCount.text = "\(String(count)) reviews"
+            }else{
+                bizReviewCount.text = "\(String(count)) reviews"
+            }
+        }else{
+            bizReviewCount.text = "No reviews"
+        }
+        
     }
     
     func setProperties(business:Business, number:Int){

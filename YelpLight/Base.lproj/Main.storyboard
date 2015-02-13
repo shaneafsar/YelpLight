@@ -117,6 +117,7 @@
                                             <outlet property="bizDistance" destination="oJj-Qe-k1v" id="BYc-NX-P7Q"/>
                                             <outlet property="bizImage" destination="Bom-bc-gw1" id="C28-e3-grR"/>
                                             <outlet property="bizRatingImage" destination="pxn-dj-dwp" id="UDO-9p-STi"/>
+                                            <outlet property="bizReviewCount" destination="89G-xF-j3k" id="d61-AF-s7y"/>
                                             <outlet property="bizTitle" destination="RJd-1B-YKr" id="YIA-LK-zWT"/>
                                             <segue destination="qr9-BY-x25" kind="push" identifier="detailSegue" id="W9i-B4-loa"/>
                                         </connections>
