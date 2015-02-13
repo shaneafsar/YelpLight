@@ -32,11 +32,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return _num
     }
 
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     var Businesses:[Business]?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationItem.titleView = self.searchBar
         
         tableView.dataSource = self
         tableView.delegate = self
