@@ -202,19 +202,13 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uKI-KX-26W" id="9Tq-uC-Vqf">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="Section" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U0Z-J7-kDN">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="252" horizontalCompressionResistancePriority="752" verticalCompressionResistancePriority="752" fixedFrame="YES" text="Section" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U0Z-J7-kDN">
                                                     <rect key="frame" x="13" y="18" width="294" height="23"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.6170494002525253" green="0.6170494002525253" blue="0.6170494002525253" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
-                                            <constraints>
-                                                <constraint firstItem="U0Z-J7-kDN" firstAttribute="leading" secondItem="9Tq-uC-Vqf" secondAttribute="leadingMargin" constant="5" id="07R-BC-T8P"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="U0Z-J7-kDN" secondAttribute="bottom" constant="5" id="18S-DP-TFJ"/>
-                                                <constraint firstItem="U0Z-J7-kDN" firstAttribute="top" secondItem="9Tq-uC-Vqf" secondAttribute="topMargin" constant="10" id="PFu-Ge-txi"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="U0Z-J7-kDN" secondAttribute="trailing" constant="5" id="isO-5w-i8M"/>
-                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="labelTitle" destination="U0Z-J7-kDN" id="U6s-7q-xa4"/>

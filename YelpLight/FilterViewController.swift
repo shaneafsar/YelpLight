@@ -12,7 +12,7 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
 
     @IBOutlet weak var tableView: UITableView!
 
-    var sections = ["","Distance","Sort by","Category"]
+    var sections = ["Test","Distance","Sort by","Category"]
     /*
     var settings = [
         0:[["label":"Deals","type":"checkbox", "filter":"deals", "value":true]],
