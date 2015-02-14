@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2D4CB0131A8DDD3E00880FBF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4CB0121A8DDD3E00880FBF /* Extensions.swift */; };
+		2D4CB01B1A8E9FEA00880FBF /* HeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4CB01A1A8E9FEA00880FBF /* HeaderCell.swift */; };
 		2D67A76B1A8C8CA1004892B2 /* Business.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D67A76A1A8C8CA1004892B2 /* Business.swift */; };
 		2D986E361A885FC8009DA43C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D986E351A885FC8009DA43C /* AppDelegate.swift */; };
 		2D986E381A885FC8009DA43C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D986E371A885FC8009DA43C /* ViewController.swift */; };
@@ -37,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		2D4CB0121A8DDD3E00880FBF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		2D4CB01A1A8E9FEA00880FBF /* HeaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeaderCell.swift; sourceTree = "<group>"; };
 		2D67A76A1A8C8CA1004892B2 /* Business.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Business.swift; sourceTree = "<group>"; };
 		2D986E301A885FC8009DA43C /* YelpLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YelpLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D986E341A885FC8009DA43C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 			children = (
 				2DC885911A89D3C8007B3527 /* YelpSettingsCell.swift */,
 				2DC885931A89D4CB007B3527 /* YelpBusinessCell.swift */,
+				2D4CB01A1A8E9FEA00880FBF /* HeaderCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -345,6 +348,7 @@
 				2D67A76B1A8C8CA1004892B2 /* Business.swift in Sources */,
 				2DC885961A89DA33007B3527 /* DetailViewController.swift in Sources */,
 				2D986E381A885FC8009DA43C /* ViewController.swift in Sources */,
+				2D4CB01B1A8E9FEA00880FBF /* HeaderCell.swift in Sources */,
 				2D986E361A885FC8009DA43C /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

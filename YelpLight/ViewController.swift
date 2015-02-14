@@ -10,6 +10,8 @@ import UIKit
 import CoreLocation
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, UISearchBarDelegate {
+    
+    let defaultText = "Restaurants"
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -19,20 +21,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     var locManager = CLLocationManager()
     
-    var lat:Double?{
-        var _lat:Double?
-        if(CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse){
-            _lat = locManager.location.coordinate.latitude
-        }
-        return _lat
-    }
-    var long:Double?{
-        var _num:Double?
-        if(CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse){
-            _num = locManager.location.coordinate.longitude
-        }
-        return _num
-    }
+    var lat:Double?
+    var long:Double?
     
     var currentRequest:AFHTTPRequestOperation?
     
@@ -44,7 +34,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.searchInput.translucent = true
+        //self.searchInput.translucent = true
         self.navigationItem.titleView = self.searchInput
 
     }
@@ -58,7 +48,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
+        /*
+        make outlets "Strong" references
+    UIView.transitionFromView(self.businessMap, toView: self.businessTable, duration: 1.0, options: UIViewAnimationOptions.TransitionFlipFromLeft, completion: { (animationFlag:Bool) -> Void in
+        self.businessTable.reloadData()})
+        UIViewAnimationOptions.TransitionFlipFromLeft | UIViewAnimationOptions.ShowHideTransitionViews
+        */
+        
+        searchInput.text = defaultText
+        
         searchInput.delegate = self
         
         tableView.dataSource = self
@@ -75,11 +73,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         locManager.requestWhenInUseAuthorization()
         locManager.startUpdatingLocation()
         
-
-        //getBusinessResults("chipotle")
+        if(CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse && locManager.location != nil){
+            lat = locManager.location.coordinate.latitude
+            long = locManager.location.coordinate.longitude
+        }
         
-
-        
+        getBusinessResults(defaultText, offset: 0)
+    }
+    
+    func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+        println("Authorization status changed")
     }
 
     override func didReceiveMemoryWarning() {
@@ -133,6 +136,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func getBusinessResults(searchTerm: String, offset:Int) -> Void {
         //println(searchTerm)
+        
+        if(CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse && locManager.location != nil){
+            lat = locManager.location.coordinate.latitude
+            long = locManager.location.coordinate.longitude
+        }
+        
         let isFreshSearch = offset == 0
         YelpClient.sharedInstance.searchWithTerm(
             searchTerm,

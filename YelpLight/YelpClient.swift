@@ -63,6 +63,7 @@ class YelpClient: BDBOAuth1RequestOperationManager {
     func initCategories(){
         categories.append(["name" : "African", "code": "african"])
         categories.append(["name" : "American, New", "code": "newamerican"])
+        /*
         categories.append(["name" : "American, Traditional", "code": "tradamerican"])
         categories.append(["name" : "Arabian", "code": "arabian"])
         categories.append(["name" : "Argentine", "code": "argentine"])
@@ -229,6 +230,7 @@ class YelpClient: BDBOAuth1RequestOperationManager {
         categories.append(["name" : "Wok", "code": "wok"])
         categories.append(["name" : "Wraps", "code": "wraps"])
         categories.append(["name" : "Yugoslav", "code": "yugoslav"])
+        */
     }
     
 }

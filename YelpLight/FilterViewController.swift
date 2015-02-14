@@ -12,7 +12,26 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
 
     @IBOutlet weak var tableView: UITableView!
 
-    var settings:NSDictionary?
+    var sections = ["","Distance","Sort by","Category"]
+    /*
+    var settings = [
+        0:[["label":"Deals","type":"checkbox", "filter":"deals", "value":true]],
+        1:[
+            ["label":"Best Match" ,  "type":"radio", "filter":"radius", "value":"best"],
+            ["label":"0.3 miles"  ,  "type":"radio", "filter":"radius", "value":482.8032],
+            ["label":"1 mile"     ,  "type":"radio", "filter":"radius", "value":1609.34],
+            ["label":"5 miles"    ,  "type":"radio", "filter":"radius", "value":8046.72],
+            ["label":"20 miles"   ,  "type":"radio", "filter":"radius", "value":32186.9]
+        ],
+        // distance, highest rated)
+        2:[
+            ["label":"Best match"       ,"type":"checkbox", "filter":"sort", "value":"best"],
+            ["label":"Distance"         ,"type":"checkbox", "filter":"sort", "value":"distance"],
+            ["label":"Highest rated"    ,"type":"checkbox", "filter":"sort", "value":"rated"]
+        ],
+        3:[["label":"Deals","type":"checkbox"]]
+    ]
+    */
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,10 +45,40 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
 
         // Do any additional setup after loading the view.
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    //deals (on/off), radius (meters), sort (best match, distance, highest rated), category
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return sections.count
+    }
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // 2
+        return 3
+    }
+
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let  headerCell = tableView.dequeueReusableCellWithIdentifier("HeaderCell") as! HeaderCell;
+        
+        let text:String
+        
+        switch (section) {
+            case 1:
+                text = sections[1]
+            case 2:
+                text = sections[2]
+            case 3:
+                text = sections[3]
+            default:
+                text = sections[0]
+        }
+        
+        headerCell.labelTitle.text = text
+        
+        return headerCell
     }
     
     
@@ -37,10 +86,6 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         let cell = tableView.dequeueReusableCellWithIdentifier("YelpSettingsCell") as! YelpSettingsCell;
         cell.settingsLabel.text = "Setting \(indexPath.row)"
         return cell
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
     }
     
 
