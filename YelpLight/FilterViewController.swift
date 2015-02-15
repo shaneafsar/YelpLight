@@ -10,6 +10,8 @@ import UIKit
 
 class FilterViewController: UIViewController {
   
+  @IBOutlet weak var searchButton: UIBarButtonItem!
+  @IBOutlet weak var cancelButton: UIBarButtonItem!
   @IBOutlet weak var tableView: UITableView!
   
   let BgColor = UIColor(red: 0.94, green: 0.94, blue: 0.94, alpha: 1.0)
@@ -37,6 +39,10 @@ class FilterViewController: UIViewController {
   var isShowingSort = false
   var selectedSortIndex = 0
   
+  var previousDealsFilter:Bool? = FilterSettingsStore.sharedInstance.getValueFor("deals_filter") as? Bool
+  var previousDistanceFilter:Double? = FilterSettingsStore.sharedInstance.getValueFor("radius_filter") as? Double
+  var previousSortFilter:Int? = FilterSettingsStore.sharedInstance.getValueFor("sort") as? Int
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -46,21 +52,42 @@ class FilterViewController: UIViewController {
     setTableView()
     
     selectedDistanceIndex = findIndexFor(distance, value: FilterSettingsStore.sharedInstance.getValueFor("radius_filter") as? Double)
-    
     selectedSortIndex = findIndexFor(sort, value: FilterSettingsStore.sharedInstance.getValueFor("sort") as? Int)
+    
+    //TODO: CATEGORIES INDICES
     
     // Do any additional setup after loading the view.
   }
   
   private func refreshResults(){
-    if let parentController = parentViewController as? ViewController{
+    if let parentController = presentingViewController as? ViewController{
       parentController.refreshBusinessResults()
     }
   }
   
+  @IBAction func onCancelPress(sender: AnyObject) {
+    let store = FilterSettingsStore.sharedInstance
+    if let previousDealsFitler = previousDealsFilter{
+      store.updateValueFor("deals_filter", value: previousDealsFilter)
+    }
+    if let previousDistanceFilter = previousDistanceFilter{
+      store.updateValueFor("radius_filter", value: previousDistanceFilter)
+    }
+    if let previousSortFilter = previousSortFilter {
+      store.updateValueFor("sort_filter", value: previousSortFilter)
+    }
+    //TODO: CATEGORIES RESTORE
+    dismissViewControllerAnimated(true, completion: nil)
+  }
+  
+  @IBAction func onSearchPress(sender: AnyObject) {
+    refreshResults()
+    dismissViewControllerAnimated(true, completion: nil)
+  }
+  
   override func viewWillDisappear(animated: Bool) {
     super.viewWillDisappear(animated)
-    refreshResults()
+    //refreshResults()
   }
   
   func findIndexFor(filters: [[String:AnyObject?]], value:Double?) -> Int{
@@ -135,6 +162,7 @@ extension FilterViewController: UITableViewDataSource{
     case 2:
       numRows = isShowingSort ? sort.count : 1
     case 3:
+      //TODO: CATEGORIES
       numRows = 0
     default:
       numRows = 0
@@ -204,6 +232,7 @@ extension FilterViewController: UITableViewDataSource{
       isShowingSort = !isShowingSort
       tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Fade)
     default:
+      //TODO: CATEGORIES
       break
     }
 
@@ -260,6 +289,7 @@ extension FilterViewController: UITableViewDataSource{
       cell.delegate = self
 
     case 3:
+      //TODO: CATEGORIES
       cell.settingsLabel.text = "Category"
       cell.filterType = "category"
       cell.delegate = self
@@ -270,45 +300,6 @@ extension FilterViewController: UITableViewDataSource{
     
     return cell
   }
-  
-  /*
-  
-  func setCellBorders(cell: UITableViewCell, indexPath: NSIndexPath){
-    
-    
-    cell.layer.borderWidth = 0.0
-    cell.layer.masksToBounds = true
-    cell.separatorInset = UIEdgeInsetsZero
-    //cell.layer.borderColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1).CGColor
-    
-    var corners:UIRectCorner?
-    let triggerCorners = isTop || isBottom
-    
-    if isTop && isBottom{
-      corners = UIRectCorner.AllCorners
-    }
-    else if isBottom{
-      corners = UIRectCorner.BottomLeft | UIRectCorner.BottomRight
-    }
-    else if isTop{
-      corners = UIRectCorner.TopLeft | UIRectCorner.TopRight
-
-    }
-    
-    if triggerCorners{
-      let maskPath = UIBezierPath(roundedRect: cell.bounds, byRoundingCorners: corners!, cornerRadii: CGSize(width: 12.0, height: 12.0))
-        
-      let maskLayer = CAShapeLayer()
-      maskLayer.frame = cell.bounds
-      maskLayer.path = maskPath.CGPath
-      cell.layer.mask = maskLayer
-    }
-    
-
-
-  }
-*/
-  
 
   
 }
