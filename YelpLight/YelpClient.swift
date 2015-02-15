@@ -54,8 +54,39 @@ class YelpClient: BDBOAuth1RequestOperationManager {
   }
   
   func searchWithTerm(#term: String, location: String, limit:Int, offset:Int, success: (AFHTTPRequestOperation!, AnyObject!) -> Void, failure: (AFHTTPRequestOperation!, NSError!) -> Void) -> AFHTTPRequestOperation! {
-    var parameters = ["term": term, "location": location, "limit": limit, "offset": offset]
-    return self.GET("search", parameters: parameters, success: success, failure: failure)
+    
+    let store = FilterSettingsStore.sharedInstance
+    let radius = store.distanceFilter
+    let deals = store.dealsFilter
+    let sort = store.sortFilter
+    
+    return searchWithTerm(term: term, location: location, limit: limit, offset: offset, sort: sort, categoryFilter: nil, radiusFilter: radius , dealsFilter: deals, success: success, failure: failure)
+  }
+  
+  func searchWithTerm(#term: String, location: String, limit: Int, offset:Int, sort:Int? = 0, categoryFilter: String?, radiusFilter: Double?, dealsFilter:Bool?, success: (AFHTTPRequestOperation!, AnyObject!) -> Void, failure: (AFHTTPRequestOperation!, NSError!) -> Void) -> AFHTTPRequestOperation! {
+    
+    var parameters:[String:String] = ["term": term, "location": location, "limit": String(limit), "offset": String(offset)]
+
+    if let sort = sort{
+       parameters.updateValue(String(stringInterpolationSegment: sort), forKey: "sort")
+    }
+    
+    if let categoryFilter = categoryFilter{
+      parameters.updateValue(categoryFilter, forKey: "category_filter")
+    }
+    if let radiusFilter = radiusFilter{
+      if radiusFilter != 0 {
+        parameters.updateValue(String(stringInterpolationSegment: radiusFilter), forKey: "radius_filter")
+      }
+    }
+    if let dealsFilter = dealsFilter{
+      parameters.updateValue(String(stringInterpolationSegment: dealsFilter), forKey: "deals_filter")
+    }
+    
+    println("\(parameters)")
+
+    return self.GET("search", parameters: parameters , success: success, failure: failure)
+    
   }
   
   //

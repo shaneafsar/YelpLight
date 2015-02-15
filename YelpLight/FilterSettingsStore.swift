@@ -9,72 +9,87 @@
 import Foundation
 
 class FilterSettingsStore{
-  private let alwaysRoundKey = "always_round_up"
+  private let DealsOnlyKey = "deals_only"
   private let defaultTipKey = "default_tip_amount"
   private let lastEditDateKey = "last_edit_date"
   private let lastAmountKey = "last_amount"
   private let localeSettingKey = "locale_setting"
   private let themeSettingKey = "theme_setting"
-  private var defaults = NSUserDefaults.standardUserDefaults()
+  private let Defaults = NSUserDefaults.standardUserDefaults()
   
   // It's set to a really small value for demo-purposes
-  let cacheAmountTimeInSeconds = 5.0
+  private let CacheAmountTimeInSeconds:Double = 3600
   
-  var alwaysRoundTips: Bool {
-    return defaults.boolForKey(alwaysRoundKey)
+  private let Filters:[String] = ["deals_filter", "sort", "radius_filter", "category_filter"]
+  
+  //Singleton
+  class var sharedInstance : FilterSettingsStore {
+    struct Static {
+      private static let bundle = NSBundle.mainBundle()
+      static let instance : FilterSettingsStore = FilterSettingsStore()
+    }
+    if Static.instance.shouldClearValues {
+      Static.instance.clearValues()
+    }
+    return Static.instance
   }
   
-  var defaultTipAmount: Double {
-    return defaults.doubleForKey(defaultTipKey)
-  }
-  
-  var lastEditDate: NSDate?{
-    return defaults.objectForKey(lastEditDateKey) as? NSDate
+  private var lastEditDate: NSDate?{
+    return Defaults.objectForKey(lastEditDateKey) as? NSDate
   }
   
   var shouldClearValues: Bool{
     if lastEditDate != nil{
       var timeSinceLastEdit = NSDate().timeIntervalSinceDate(lastEditDate!)
-      return timeSinceLastEdit > cacheAmountTimeInSeconds
+      return timeSinceLastEdit > CacheAmountTimeInSeconds
     }
     return false
   }
   
-  var lastBillAmount: Double{
-    return defaults.doubleForKey(lastAmountKey)
+  var dealsFilter: Bool?{
+    return getValueFor("deals_filter") as? Bool
   }
   
-  func setTipRounding(doRound: Bool){
-    defaults.setBool(doRound, forKey: alwaysRoundKey)
-    defaults.synchronize()
+  var sortFilter: Int?{
+    return getValueFor("sort") as? Int
   }
   
-  func setDefaultTip(amount: Double){
-    defaults.setDouble(amount, forKey: defaultTipKey)
-    defaults.synchronize()
+  var distanceFilter: Double?{
+    return getValueFor("radius_filter") as? Double
   }
   
-  func setLastEditTime(time: NSDate = NSDate()){
-    defaults.setObject(time, forKey: lastEditDateKey)
-    defaults.synchronize()
+  func getValueFor(key:String?) -> AnyObject?{
+    if let key = key{
+      return Defaults.objectForKey(key)
+    }
+    return nil
   }
   
-  func setLastBillAmount(amount: Double){
-    defaults.setDouble(amount, forKey: lastAmountKey)
-    defaults.synchronize()
+  
+  func updateValueFor(key:String?, value:AnyObject?){
+    if let key = key{
+      println("\(key): \(value)")
+      Defaults.setValue(value, forKey: key)
+      Defaults.synchronize();
+    }
   }
   
-  func setLocale(localId: String){
-    defaults.setObject(localId, forKey: localeSettingKey);
-    defaults.synchronize();
+  func updateValueForDeals(value: Bool?){
+    updateValueFor("deals_filter", value: value)
   }
   
-  func setTheme(theme: String){
-    defaults.setObject(theme, forKey: themeSettingKey);
-    defaults.synchronize();
+  func updateValueForDistance(value: Double?){
+    updateValueFor("radius_filter", value: value)
   }
+  
+  func updateValueForCategories(value: String?){
+    
+  }
+  
   
   func clearValues(){
-    setLastBillAmount(0)
+    for filter in Filters{
+      Defaults.setNilValueForKey(filter)
+    }
   }
 }

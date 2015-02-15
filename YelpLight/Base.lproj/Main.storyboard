@@ -192,22 +192,26 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="55" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="3ao-Td-GdM">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="49" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="3ao-Td-GdM">
+                                <rect key="frame" x="5" y="0.0" width="310" height="568"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="YelpSettingsCell" rowHeight="55" id="cXq-6s-fBi" customClass="YelpSettingsCell" customModule="YelpLight" customModuleProvider="target">
+                                    <tableViewCell opaque="NO" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="YelpSettingsCell" id="cXq-6s-fBi" customClass="YelpSettingsCell" customModule="YelpLight" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="262" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cXq-6s-fBi" id="gut-eX-xcT">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XWO-rV-mWX">
-                                                    <rect key="frame" x="268" y="13" width="51" height="31"/>
+                                                    <rect key="frame" x="258" y="13" width="51" height="28"/>
+                                                    <connections>
+                                                        <action selector="onChanged:" destination="cXq-6s-fBi" eventType="valueChanged" id="b0h-FQ-v63"/>
+                                                    </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="no0-rj-WjI">
-                                                    <rect key="frame" x="13" y="13" width="250" height="28"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="no0-rj-WjI">
+                                                    <rect key="frame" x="13" y="13" width="240" height="28"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -230,12 +234,12 @@
                                 </prototypes>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="3ao-Td-GdM" firstAttribute="top" secondItem="EPP-bu-pxL" secondAttribute="top" id="1fg-2G-2dc"/>
-                            <constraint firstAttribute="trailing" secondItem="3ao-Td-GdM" secondAttribute="trailing" id="J9e-Ns-d83"/>
+                            <constraint firstAttribute="trailing" secondItem="3ao-Td-GdM" secondAttribute="trailing" constant="5" id="J9e-Ns-d83"/>
                             <constraint firstItem="SMP-y6-0de" firstAttribute="top" secondItem="3ao-Td-GdM" secondAttribute="bottom" id="SVn-VF-wUm"/>
-                            <constraint firstItem="3ao-Td-GdM" firstAttribute="leading" secondItem="EPP-bu-pxL" secondAttribute="leading" id="j4T-hh-7zd"/>
+                            <constraint firstItem="3ao-Td-GdM" firstAttribute="leading" secondItem="EPP-bu-pxL" secondAttribute="leading" constant="5" id="j4T-hh-7zd"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="fIL-KQ-Sew"/>

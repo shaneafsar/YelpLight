@@ -32,11 +32,12 @@ class ViewController: UIViewController {
     super.viewWillAppear(animated)
     
     //Move the searchinput to the navbar
-    navigationItem.titleView = self.searchInput
+    navigationItem.titleView = searchInput
   }
   
   override func viewWillDisappear(animated:Bool) {
     super.viewWillDisappear(animated)
+    
     //Close the keyboard if transitioning to a new view
     searchInput.endEditing(true)
   }
@@ -104,6 +105,7 @@ class ViewController: UIViewController {
     ]
   }
   
+
   private func getBusinessResultsSuccess(#operation: AFHTTPRequestOperation!, response: AnyObject!, isFreshSearch: Bool) -> Void {
     var moreBusinesses:[Business]?
     
@@ -113,18 +115,31 @@ class ViewController: UIViewController {
     //Loop through and add user location to models.
     //also add models if this is a pagination request
     if let businesses = moreBusinesses {
-      println("LATITUDE: \(String(stringInterpolationSegment: self.latitude))")
       for business in businesses {
         business.setUserLocation(latitude: self.latitude, longitude: self.longitude)
+        
         if !isFreshSearch {
           Businesses?.append(business)
         }
       }
+    
     }
     
     //Set models if this is a fresh request
     if isFreshSearch{
       Businesses = moreBusinesses
+    }
+    
+    //Since the Yelp API doesn't return the distance, and the calculation
+    //we are using to get the distance is slightly different, we need to manually sort
+    //if it's done by "distance"
+    if let sort = FilterSettingsStore.sharedInstance.getValueFor("sort") as? Int, let Businesses = Businesses{
+      if sort == 1{
+        self.Businesses = sorted(Businesses){(biz1, biz2) -> Bool in
+          return biz1.distanceTo < biz2.distanceTo
+        }
+
+      }
     }
     
     tableView.reloadData()
@@ -134,6 +149,10 @@ class ViewController: UIViewController {
       tableView.scrollRectToVisible(CGRectMake(0, 0, 1, 1), animated: false)
     }
 
+  }
+  
+  func refreshBusinessResults(){
+    getBusinessResults(currentSearchText ?? DefaultText, offset: 0)
   }
   
   private func getBusinessResults(searchTerm: String, offset:Int) -> Void {
@@ -192,6 +211,7 @@ extension ViewController: UITableViewDataSource{
     return cell
   }
   
+  //Infinite scroll functionality
   func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath){
     if let Businesses = Businesses, let totalBusinesses = totalBusinesses, currentSearchText = currentSearchText{
       if indexPath.row == Businesses.count - InfiniteScrollThreshold && Businesses.count != totalBusinesses{
