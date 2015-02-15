@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2D38D8D61A9001D80085B797 /* FilterSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D38D8D51A9001D80085B797 /* FilterSettingsStore.swift */; };
-		2D38D8DA1A907C630085B797 /* DictionaryConcat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D38D8D91A907C630085B797 /* DictionaryConcat.swift */; };
 		2D4CB0131A8DDD3E00880FBF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4CB0121A8DDD3E00880FBF /* Extensions.swift */; };
 		2D67A76B1A8C8CA1004892B2 /* Business.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D67A76A1A8C8CA1004892B2 /* Business.swift */; };
 		2D986E361A885FC8009DA43C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D986E351A885FC8009DA43C /* AppDelegate.swift */; };
@@ -39,7 +38,6 @@
 
 /* Begin PBXFileReference section */
 		2D38D8D51A9001D80085B797 /* FilterSettingsStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterSettingsStore.swift; sourceTree = "<group>"; };
-		2D38D8D91A907C630085B797 /* DictionaryConcat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionaryConcat.swift; sourceTree = "<group>"; };
 		2D4CB0121A8DDD3E00880FBF /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		2D67A76A1A8C8CA1004892B2 /* Business.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Business.swift; sourceTree = "<group>"; };
 		2D986E301A885FC8009DA43C /* YelpLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YelpLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,7 +121,6 @@
 				2D986E5B1A88638A009DA43C /* YelpClient.swift */,
 				2D4CB0121A8DDD3E00880FBF /* Extensions.swift */,
 				2D38D8D51A9001D80085B797 /* FilterSettingsStore.swift */,
-				2D38D8D91A907C630085B797 /* DictionaryConcat.swift */,
 			);
 			path = YelpLight;
 			sourceTree = "<group>";
@@ -345,7 +342,6 @@
 				2DC8859B1A89DA9E007B3527 /* FilterViewController.swift in Sources */,
 				2DC885921A89D3C8007B3527 /* YelpSettingsCell.swift in Sources */,
 				2DC885941A89D4CB007B3527 /* YelpBusinessCell.swift in Sources */,
-				2D38D8DA1A907C630085B797 /* DictionaryConcat.swift in Sources */,
 				2DD8FCA91A8C96190043AD1E /* JSONHelper.swift in Sources */,
 				2D986E5C1A88638A009DA43C /* YelpClient.swift in Sources */,
 				2D4CB0131A8DDD3E00880FBF /* Extensions.swift in Sources */,
