@@ -14,6 +14,7 @@ class ViewController: UIViewController {
   private let InfiniteScrollThreshold = 10
   private let ResultLimit = 20
   private let DefaultText = "Restaurants"
+  private var searchLocation = "San Francisco"
   private let LocManager = CLLocationManager()
   
   @IBOutlet weak var tableView: UITableView!
@@ -84,6 +85,8 @@ class ViewController: UIViewController {
   
   private func setLocation(){
     LocManager.delegate = self
+    LocManager.distanceFilter = kCLDistanceFilterNone
+    LocManager.desiredAccuracy = kCLLocationAccuracyBest
     LocManager.requestWhenInUseAuthorization()
     LocManager.startUpdatingLocation()
 
@@ -162,7 +165,7 @@ class ViewController: UIViewController {
     
     YelpClient.sharedInstance.searchWithTerm(
       term: searchTerm,
-      location: "San Francisco",
+      location: searchLocation,
       limit: ResultLimit,
       offset: offset,
       success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
@@ -183,6 +186,24 @@ extension ViewController: CLLocationManagerDelegate{
   func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
     println("Authorization status changed")
     updateLocation()
+  }
+  
+  func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+    println("Did update locations")
+    var currentLocation = locations[0] as? CLLocation
+    LocManager.stopUpdatingLocation()
+    var GeoCoder = CLGeocoder()
+    GeoCoder.reverseGeocodeLocation(currentLocation){ (placemarks, error) -> Void in
+      if error != nil{
+        println("failed to get location: \(error)")
+      }else{
+        var placemark = placemarks[0] as? CLPlacemark
+        println("Location found")
+        if let addressLines = placemark?.addressDictionary["FormattedAddressLines"] as? [String]{
+          self.searchLocation = ",".join(addressLines)
+        }
+      }
+    }
   }
   
 }

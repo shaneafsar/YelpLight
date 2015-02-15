@@ -14,7 +14,7 @@ class FilterViewController: UIViewController {
   @IBOutlet weak var cancelButton: UIBarButtonItem!
   @IBOutlet weak var tableView: UITableView!
   
-  let BgColor = UIColor(red: 0.94, green: 0.94, blue: 0.94, alpha: 1.0)
+  let BgColor = UIColor(red: 0.92, green: 0.92, blue: 0.92, alpha: 1.0)
   
   var sections = ["Price","Distance","Sort by","Category"]
   
@@ -54,6 +54,7 @@ class FilterViewController: UIViewController {
     setTableView()
     
     selectedDistanceIndex = findIndexFor(distance, value: FilterSettingsStore.sharedInstance.getValueFor("radius_filter") as? Double)
+
     selectedSortIndex = findIndexFor(sort, value: FilterSettingsStore.sharedInstance.getValueFor("sort") as? Int)
     
     //TODO: CATEGORIES INDICES
@@ -76,7 +77,7 @@ class FilterViewController: UIViewController {
       store.updateValueFor("radius_filter", value: previousDistanceFilter)
     }
     if let previousSortFilter = previousSortFilter {
-      store.updateValueFor("sort_filter", value: previousSortFilter)
+      store.updateValueFor("sort", value: previousSortFilter)
     }
     //TODO: CATEGORIES RESTORE
     dismissViewControllerAnimated(true, completion: nil)
