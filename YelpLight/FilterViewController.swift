@@ -46,6 +46,8 @@ class FilterViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    tableView.autoresizingMask = UIViewAutoresizing.FlexibleWidth
+    
     view.backgroundColor = BgColor
     tableView.backgroundColor = BgColor
     
@@ -299,6 +301,19 @@ extension FilterViewController: UITableViewDataSource{
     }
     
     return cell
+  }
+  
+  //Custom masks don't automatically resize on orientation change
+  //so this is needed
+  override func viewWillLayoutSubviews() {
+    super.viewWillLayoutSubviews()
+    let visibleCells = tableView.visibleCells() as? [YelpSettingsCell]
+    if let visibleCells  = visibleCells {
+      for cell in visibleCells {
+        cell.layoutSubviews()
+      }
+    }
+    
   }
 
   

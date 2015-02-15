@@ -23,6 +23,9 @@ class YelpSettingsCell: UITableViewCell {
   var filterType:String?
   var filterValue:AnyObject?
   
+  var top=false
+  var bottom=false
+  
   override func awakeFromNib() {
     super.awakeFromNib()
     // Initialization code
@@ -41,6 +44,8 @@ class YelpSettingsCell: UITableViewCell {
   
   
   func setBorders(#isTop: Bool, isBottom: Bool){
+    top = isTop
+    bottom = isBottom
     
     layer.borderWidth = 0.0
     layer.masksToBounds = true
@@ -59,6 +64,7 @@ class YelpSettingsCell: UITableViewCell {
       corners = UIRectCorner.TopLeft | UIRectCorner.TopRight
       
     }
+ 
     
     if triggerCorners{
       let maskPath = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners!, cornerRadii: CGSize(width: 12.0, height: 12.0))
@@ -68,14 +74,19 @@ class YelpSettingsCell: UITableViewCell {
       maskLayer.path = maskPath.CGPath
       layer.mask = maskLayer
     }
+
     
     if optionSwitch.hidden == false{
       selectionStyle = .None
     }
     
-    
-    
   }
   
+  //Custom masks don't automatically resize on orientation change
+  //so this is needed
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    setBorders(isTop: top, isBottom: bottom)
+  }
 
 }
