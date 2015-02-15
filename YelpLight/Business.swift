@@ -10,107 +10,121 @@ import Foundation
 import GLKit
 
 class Business : Deserializable{
-    var title:String?
-    var distance:String?
-    var imageUrl:String?
-    var ratingImageUrl:String?
-    var reviews:Int?
-    var location:BusinessLocation?
-    var userLocationLat:Double?
-    var userLocationLon:Double?
-    private var _categories:[[String]]?
-    
-    lazy var categoriesAsSingle:String? = {
-        [unowned self] in
-        var _cats:String?
-
-        if let cats = self._categories{
-            var _meta = [String]()
-            for rry in cats{
-                if rry.count > 0{
-                    _meta.append(rry[0])
-                }
-            }
-            _cats = ", ".join(_meta)
-        }
-        return _cats
-    }()
-
-    
-    lazy var ratingImageNsUrl:NSURL? = {
-       [unowned self] in
-        if let url = self.ratingImageUrl{
-            return NSURL(string: url)
-        }
-        return nil
-    }()
-    lazy var imageNsUrl:NSURL? = {
-        [unowned self] in
-        if let url = self.imageUrl {
-            return NSURL(string: url)
-        }
-        return nil
-    }()
-    
-    lazy var distanceTo:Double? = {
-        [unowned self] in
-        return self.location?.coordinate?.distanceTo(self.userLocationLat, long:self.userLocationLon)
-    }()
-    
-    required init(data: [String: AnyObject]) {
-        
-        title <<< data["name"]
-        distance <<< data["name"]
-        imageUrl <<< data["image_url"]
-        ratingImageUrl <<< data["rating_img_url"]
-        reviews <<< data["review_count"]
-        _categories <<<* data["categories"]
-        location <<<< data["location"]
-    
+  var title:String?
+  var reviews:Int?
+  var reviewsStatement:String?{
+    let statement:String?
+    if let reviews = reviews{
+      statement = reviews != 1 ? "\(String(reviews)) reviews" : "\(String(reviews)) review"
+    }else{
+      statement = "No reviews"
     }
+    return statement
+  }
+  var location:BusinessLocation?
+  
+  private var imageUrl:String?
+  private var ratingImageUrl:String?
+  private var userLatitude:Double?
+  private var userLongitude:Double?
+  private var categories:[[String]]?
+  
+  var ratingImageNsUrl:NSURL? {
+    if let url = ratingImageUrl{
+      return NSURL(string: url)
+    }
+    return nil
+  }
+  
+  var imageNsUrl:NSURL? {
+    if let url = imageUrl {
+      return NSURL(string: url)
+    }
+    return nil
+  }
+  
+  // The YelpAPI provides categories as a weird multidimensional array
+  // of "pretty" names and code names.
+  // This simply provides a comma-delimted list of the "pretty" names
+  lazy var categoriesCommaDelimited:String? = {
+    [unowned self] in
+    var categoryStatement:String?
     
+    if let categories = self.categories{
+      var collection = [String]()
+      for item in categories{
+        if item.count > 0{
+          collection.append(item[0])
+        }
+      }
+      categoryStatement = ", ".join(collection)
+    }
+    return categoryStatement
+    }()
+  
+  lazy var distanceTo:Double? = {
+    [unowned self] in
+    return self.location?.coordinate?.distanceTo(userLatitude: self.userLatitude, userLongitude:self.userLongitude)
+  }()
+  
+  required init(data: [String: AnyObject]) {
+    
+    title <<< data["name"]
+    imageUrl <<< data["image_url"]
+    ratingImageUrl <<< data["rating_img_url"]
+    reviews <<< data["review_count"]
+    categories <<<* data["categories"]
+    location <<<< data["location"]
+    
+  }
+  
+  func setUserLocation(#latitude: Double?, longitude: Double?){
+    userLatitude = latitude
+    userLongitude = longitude
+  }
+  
 }
 
 class BusinessLocation : Deserializable{
-    var displayAddress: [String]?
-    var singleDisplayAddress:String? {
-        if let address = displayAddress{
-            return ", ".join(address)
-        }
-        return nil
+  var displayAddress: [String]?
+  var singleDisplayAddress:String? {
+    if let address = displayAddress{
+      return ", ".join(address)
     }
-    var coordinate:BusinessCoordinate?
-    
-    required init(data: [String: AnyObject]){
-        displayAddress <<<* data["display_address"]
-        coordinate <<<< data["coordinate"]
-    }
+    return nil
+  }
+  var coordinate:BusinessCoordinate?
+  
+  required init(data: [String: AnyObject]){
+    displayAddress <<<* data["display_address"]
+    coordinate <<<< data["coordinate"]
+  }
 }
 
 class BusinessCoordinate : Deserializable{
-    let metersToMiles = 0.000621371 as Double
-    let R = 6371000 as Double
-    let degreesToRadians = 0.0174532925 as Double
-    
-    var latitude:Double?
-    var longitude:Double?
-    
-    required init(data: [String: AnyObject]){
-        latitude <<< data["latitude"]
-        longitude <<< data["longitude"]
+  let MetersToMiles:Double = 0.000621371
+  let R:Double = 6371000
+  let DegreesToRadians:Double = 0.0174532925
+  
+  var latitude:Double?
+  var longitude:Double?
+  
+  required init(data: [String: AnyObject]){
+    latitude <<< data["latitude"]
+    longitude <<< data["longitude"]
+  }
+  
+  //Returns direct distance in miles
+  func distanceTo(#userLatitude:Double?, userLongitude:Double?) -> Double?{
+    if let latitude=latitude, let longitude=longitude, let userLatitude=userLatitude, let userLongitude=userLongitude{
+      var φ1 = latitude * DegreesToRadians,
+      φ2 = userLatitude * DegreesToRadians,
+      Δλ = (userLongitude * DegreesToRadians) - (longitude * DegreesToRadians);
+      
+      var val = sin(φ1)*sin(φ2) + cos(φ1)*cos(φ2)*cos(Δλ)
+      return acos(val) * R * MetersToMiles
     }
-    
-    //Returns direct distance in miles
-    func distanceTo(lat:Double?, long:Double?) -> Double?{
-        if let lat1=latitude, let lon1=longitude, let lat2=lat, let lon2=long{
-            var φ1 = lat1 * degreesToRadians,
-                φ2 = lat2 * degreesToRadians,
-            Δλ = (lon2 * degreesToRadians) - (lon1 * degreesToRadians);
-        
-            var val = sin(φ1)*sin(φ2) + cos(φ1)*cos(φ2)*cos(Δλ)
-            return acos(val) * R * metersToMiles
-        }
-        return nil
-    }
+    return nil
+  }
 }
 
