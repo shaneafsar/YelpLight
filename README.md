@@ -59,7 +59,7 @@ Time spent: 18 hrs
     YELP_LIGHT_ACCESS_SECRET = your-secret
 ````
 
-* Open the Rotten.xcworkspace file, and build!
+* Open the YelpLight.xcworkspace file, and build!
 
 
 Credits
