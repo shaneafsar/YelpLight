@@ -50,10 +50,12 @@ Time spent: 18 hrs
 * In the config folder, create YelpLightConfig.xcconfig
 * Inside MyConfig.xcconfig, add:
 
+````
     YELP_LIGHT_CONSUMER_KEY = your-consumer-token
     YELP_LIGHT_CONSUMER_SECRET = your-consumer-secret
     YELP_LIGHT_ACCESS_TOKEN = your-token
     YELP_LIGHT_ACCESS_SECRET = your-secret
+````
 
 * Open the Rotten.xcworkspace file, and build!
 
