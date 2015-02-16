@@ -42,6 +42,22 @@ Time spent: 18 hrs
 #### Landscape demo
 ![Landscape demo](yelpdemo3a.gif)
 
+### Installation
+### Installation
+* Requires Xcode 6.3 beta
+* Retrieve the Yelp API tokens fror from http://developer.yelp.com
+* Create a folder called Config in the main folder (the one that contains the Podfile)
+* In the config folder, create YelpLightConfig.xcconfig
+* Inside MyConfig.xcconfig, add:
+
+    YELP_LIGHT_CONSUMER_KEY = your-consumer-token
+    YELP_LIGHT_CONSUMER_SECRET = your-consumer-secret
+    YELP_LIGHT_ACCESS_TOKEN = your-token
+    YELP_LIGHT_ACCESS_SECRET = your-secret
+
+* Open the Rotten.xcworkspace file, and build!
+
+
 Credits
 ---------
 * [Yelp API](http://www.yelp.com/developers)
