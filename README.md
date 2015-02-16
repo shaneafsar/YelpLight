@@ -42,6 +42,9 @@ Time spent: 18 hrs
 #### Landscape demo
 ![Landscape demo](yelpdemo3a.gif)
 
+#### Long name screenshot
+![long name screenshot](Long name example.gif)
+
 ### Installation
 * Requires Xcode 6.3 beta
 * Retrieve the Yelp API tokens from http://developer.yelp.com
