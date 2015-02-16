@@ -15,6 +15,7 @@ protocol SearchDelegate {
 
 class FilterViewController: UIViewController {
   
+  let CategoriesSubset = 4
   let BgColor = UIColor(red: 0.92, green: 0.92, blue: 0.92, alpha: 1.0)
   
   @IBOutlet weak var searchButton: UIBarButtonItem!
@@ -193,7 +194,7 @@ extension FilterViewController: UITableViewDataSource{
     case 2:
       numRows = isShowingSort ? sort.count : 1
     case 3:
-      numRows = isShowingCategories ? categories.count : 1
+      numRows = isShowingCategories ? categories.count : CategoriesSubset
     default:
       numRows = 0
     }
@@ -264,7 +265,8 @@ extension FilterViewController: UITableViewDataSource{
       isShowingSort = !isShowingSort
       tableView.reloadSections(NSIndexSet(index: section), withRowAnimation: UITableViewRowAnimation.Fade)
     case 3:
-      if isShowingCategories {
+      let expandIndex = CategoriesSubset - 1
+      if isShowingCategories || indexPath.row < expandIndex {
         let isSelected = contains(selectedCategoriesIndices, indexPath.row)
         
         if isSelected {
@@ -280,8 +282,10 @@ extension FilterViewController: UITableViewDataSource{
         store.updateValueForCategories(cell.filterValue as? String)
         println("Current categories: \(store.categoryFilter)")
       }else{
-        isShowingCategories = true
-        tableView.reloadSections(NSIndexSet(index: section), withRowAnimation: UITableViewRowAnimation.Fade)
+        if indexPath.row == expandIndex{
+          isShowingCategories = true
+          tableView.reloadSections(NSIndexSet(index: section), withRowAnimation: UITableViewRowAnimation.Fade)
+        }
       }
     default:
 
@@ -354,9 +358,20 @@ extension FilterViewController: UITableViewDataSource{
         //cell.accessoryType = .None
         //cell.accessoryView = CircleView(frame: CGRect(x: 0, y: 0, width: 30, height: 30), isSelected: isSelected)
       }else{
-        cell.settingsLabel.text = "Show all categories"
-        cell.filterValue = nil
-        cell.accessoryType = .DisclosureIndicator
+        
+        if indexPath.row < CategoriesSubset - 1 {
+          let isSelected = contains(selectedCategoriesIndices, indexPath.row)
+          cell.settingsLabel.text = categories[indexPath.row]["label"]
+          cell.filterValue =  categories[indexPath.row]["value"]
+          cell.accessoryType = isSelected ? .Checkmark : .None
+        }else{
+          cell.settingsLabel.text = "Show all categories"
+          cell.filterValue = nil
+          cell.accessoryType = .DisclosureIndicator
+        }
+        
+        
+       
       }
 
       
@@ -395,7 +410,7 @@ extension FilterViewController: UITableViewDelegate{
       case 2:
         isBottom = isShowingSort ?  index == sort.count - 1 :  index == 0
       case 3:
-        isBottom = isShowingCategories ? index == categories.count - 1 : index == 0
+        isBottom = isShowingCategories ? index == categories.count - 1 : index == CategoriesSubset - 1
       default:
         isBottom =  index == 0
       }
