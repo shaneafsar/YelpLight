@@ -56,6 +56,10 @@ class FilterViewController: UIViewController {
   var previousSortFilter:Int? = FilterSettingsStore.sharedInstance.sortFilter
   var previousCategoryFilter:String? = FilterSettingsStore.sharedInstance.categoryFilter
   
+  override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     

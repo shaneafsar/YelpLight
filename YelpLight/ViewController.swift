@@ -37,12 +37,12 @@ class ViewController: UIViewController, MKMapViewDelegate {
   private var currentSearchText:String?
   private var Businesses:[Business]?
   private var totalBusinesses:Int?
-  
+  private var hasNoValues:Bool = false
   private var showingMap:Bool = false
   
   override func viewWillAppear(animated: Bool) {
     super.viewWillAppear(animated)
-    
+
     //Move the searchinput to the navbar
     navigationItem.titleView = searchInput
   }
@@ -123,6 +123,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
     searchInput.delegate = self
     filterButton.title = "Filter"
   }
+
   
   private func setTableView(){
     tableView.dataSource = self
@@ -196,6 +197,10 @@ class ViewController: UIViewController, MKMapViewDelegate {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
         dist,
         dist)
+    }
+    
+    if let total = totalBusinesses{
+      hasNoValues = total == 0;
     }
     
     if self.showingMap {
@@ -286,11 +291,11 @@ extension ViewController: UITableViewDelegate{
 extension ViewController: UITableViewDataSource{
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return Businesses?.count ?? 1
+    return hasNoValues ? 1 : Businesses?.count ?? 0
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    if Businesses?.count > 0{
+    if hasNoValues == false {
       let cell = tableView.dequeueReusableCellWithIdentifier("YelpBusinessCell") as! YelpBusinessCell
     
       if let Businesses = Businesses{
@@ -330,5 +335,9 @@ extension ViewController: UISearchBarDelegate{
     }
   }
   
+  func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    getBusinessResults(searchBar.text, offset: 0)
+    searchInput.endEditing(true)
+  }
 }
 
