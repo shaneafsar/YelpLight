@@ -43,7 +43,7 @@ Time spent: 18 hrs
 ![Landscape demo](yelpdemo3a.gif)
 
 #### Long name screenshot
-![long name screenshot](Long name example.gif)
+![long name screenshot](Long_name_example.png)
 
 ### Installation
 * Requires Xcode 6.3 beta
