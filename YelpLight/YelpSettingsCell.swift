@@ -42,7 +42,6 @@ class YelpSettingsCell: UITableViewCell {
     delegate?.switchView(self, switchedOn: optionSwitch.on)
   }
   
-  
   func setBorders(#isTop: Bool, isBottom: Bool){
     top = isTop
     bottom = isBottom
@@ -62,12 +61,18 @@ class YelpSettingsCell: UITableViewCell {
     }
     else if isTop{
       corners = UIRectCorner.TopLeft | UIRectCorner.TopRight
-      
     }
- 
+    
     
     if triggerCorners{
       let maskPath = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners!, cornerRadii: CGSize(width: 12.0, height: 12.0))
+      
+      let maskLayer = CAShapeLayer()
+      maskLayer.frame = bounds
+      maskLayer.path = maskPath.CGPath
+      layer.mask = maskLayer
+    }else{
+      let maskPath = UIBezierPath(rect: bounds)
       
       let maskLayer = CAShapeLayer()
       maskLayer.frame = bounds
@@ -87,6 +92,11 @@ class YelpSettingsCell: UITableViewCell {
   override func layoutSubviews() {
     super.layoutSubviews()
     setBorders(isTop: top, isBottom: bottom)
+  }
+  
+  func layoutSubviews(#isTop:Bool, isBottom: Bool){
+    super.layoutSubviews()
+    setBorders(isTop: isTop, isBottom: isBottom)
   }
 
 }

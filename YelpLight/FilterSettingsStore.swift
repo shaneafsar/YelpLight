@@ -9,18 +9,20 @@
 import Foundation
 
 class FilterSettingsStore{
-  private let DealsOnlyKey = "deals_only"
-  private let defaultTipKey = "default_tip_amount"
+  private let SortKey = "sort"
+  private let DealsKey = "deals_filter"
+  private let DistanceKey = "radius_filter"
+  private let CategoryKey = "category_filter"
   private let lastEditDateKey = "last_edit_date"
-  private let lastAmountKey = "last_amount"
-  private let localeSettingKey = "locale_setting"
-  private let themeSettingKey = "theme_setting"
+  
   private let Defaults = NSUserDefaults.standardUserDefaults()
   
-  // It's set to a really small value for demo-purposes
+  // Cache Filter settings for 1 hr
   private let CacheAmountTimeInSeconds:Double = 3600
   
-  private let Filters:[String] = ["deals_filter", "sort", "radius_filter", "category_filter"]
+  private var Filters:[String] {
+    return [SortKey, DealsKey, DistanceKey, CategoryKey]
+  }
   
   //Singleton
   class var sharedInstance : FilterSettingsStore {
@@ -47,17 +49,36 @@ class FilterSettingsStore{
   }
   
   var dealsFilter: Bool?{
-    return getValueFor("deals_filter") as? Bool
+    return getValueFor(DealsKey) as? Bool
   }
   
   var sortFilter: Int?{
-    return getValueFor("sort") as? Int
+    return getValueFor(SortKey) as? Int
+  }
+  
+  var isSortByDistance:Bool{
+    if let sort = sortFilter{
+      return sort == 1
+    }
+    return false
   }
   
   var distanceFilter: Double?{
-    return getValueFor("radius_filter") as? Double
+    return getValueFor(DistanceKey) as? Double
   }
   
+  var categoryFilter: String?{
+    return getValueFor(CategoryKey) as? String
+  }
+  
+  var hasCategories: Bool{
+    if let categoryFilter = categoryFilter{
+      var currentValues = split(categoryFilter, {$0 == ","}, maxSplit: Int.max, allowEmptySlices: false)
+      return currentValues.count > 0
+    }
+    return false
+  }
+
   func getValueFor(key:String?) -> AnyObject?{
     if let key = key{
       return Defaults.objectForKey(key)
@@ -75,18 +96,44 @@ class FilterSettingsStore{
   }
   
   func updateValueForDeals(value: Bool?){
-    updateValueFor("deals_filter", value: value)
+    updateValueFor(DealsKey, value: value)
   }
   
   func updateValueForDistance(value: Double?){
-    updateValueFor("radius_filter", value: value)
+    if let value = value{
+      Defaults.setDouble(value, forKey: DistanceKey)
+      Defaults.synchronize();
+    }
+  }
+  
+  func updateValueForSort(value: Int?){
+    updateValueFor(SortKey, value: value)
   }
   
   func updateValueForCategories(value: String?){
+    if let categoryFilter = categoryFilter{
+      if let value = value{
+        toggleValues(categoryFilter, toggleValue: value)
+      }
+    }else{
+      if let value = value{
+        toggleValues("", toggleValue: value)
+      }
+    }
     
   }
   
-  
+  private func toggleValues(currentValue: String, toggleValue: String){
+    var currentValues = split(currentValue, {$0 == ","}, maxSplit: Int.max, allowEmptySlices: false)
+    if !contains(currentValues, toggleValue){
+      currentValues.append(toggleValue)
+      updateValueFor(CategoryKey, value: ",".join(currentValues))
+    }else{
+      currentValues.removeAtIndex(find(currentValues, toggleValue)!)
+      updateValueFor(CategoryKey, value: ",".join(currentValues))
+    }
+  }
+
   func clearValues(){
     for filter in Filters{
       Defaults.setNilValueForKey(filter)

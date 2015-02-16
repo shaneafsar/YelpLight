@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreLocation
+import MapKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, MKMapViewDelegate {
   
   private let InfiniteScrollThreshold = 10
   private let ResultLimit = 20
@@ -17,17 +18,27 @@ class ViewController: UIViewController {
   private var searchLocation = "San Francisco"
   private let LocManager = CLLocationManager()
   
-  @IBOutlet weak var tableView: UITableView!
+  @IBOutlet var tableView: UITableView!
   
   @IBOutlet weak var filterButton: UIBarButtonItem!
   
   @IBOutlet weak var searchInput: UISearchBar!
+
+  @IBOutlet weak var mapButton: UIBarButtonItem!
+  
+  @IBOutlet var mapView: MKMapView!
+  
+  @IBOutlet var mapContainer: UIView!
+  
+  @IBOutlet var tableContainer: UIView!
   
   private var latitude:Double?
   private var longitude:Double?
   private var currentSearchText:String?
   private var Businesses:[Business]?
   private var totalBusinesses:Int?
+  
+  private var showingMap:Bool = false
   
   override func viewWillAppear(animated: Bool) {
     super.viewWillAppear(animated)
@@ -43,16 +54,58 @@ class ViewController: UIViewController {
     searchInput.endEditing(true)
   }
   
+  @IBAction func showMapView(sender: AnyObject) {
+
+    if !showingMap{
+      self.updateMapView()
+      UIView.transitionFromView(tableContainer, toView: mapContainer, duration: 1.0, options: UIViewAnimationOptions.TransitionFlipFromRight | UIViewAnimationOptions.ShowHideTransitionViews, completion: { (animationFlag:Bool) -> Void in
+        
+        self.mapButton.title = "Table"
+        self.showingMap = true
+      })
+    }else{
+
+      self.tableView.reloadData()
+      UIView.transitionFromView(mapContainer, toView: tableContainer, duration: 1.0, options: UIViewAnimationOptions.TransitionFlipFromLeft | UIViewAnimationOptions.ShowHideTransitionViews, completion: { (animationFlag:Bool) -> Void in
+        
+        
+        self.mapButton.title = "Map"
+        self.showingMap = false
+      })
+    }
+  }
+  
+  func updateMapView(){
+    if let Businesses = self.Businesses{
+       self.mapView.removeAnnotations(self.mapView.annotations)
+      for business in Businesses{
+        if let lat = business.location?.coordinate?.latitude, let long = business.location?.coordinate?.longitude{
+          var location = CLLocationCoordinate2D(latitude: lat, longitude: long)
+          var dropPin = MKPointAnnotation()
+          dropPin.coordinate = location
+          dropPin.title = business.title
+          self.mapView.addAnnotation(dropPin)
+        }
+      }
+     
+    }
+  }
+  
+  /*
+  //For custom annotations on map view
+  func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+    if (annotation is MKUserLocation){
+      return nil
+    }
+    
+  }
+  */
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    /*
-    make outlets "Strong" references
-    UIView.transitionFromView(self.businessMap, toView: self.businessTable, duration: 1.0, options: UIViewAnimationOptions.TransitionFlipFromLeft, completion: { (animationFlag:Bool) -> Void in
-    self.businessTable.reloadData()})
-    UIViewAnimationOptions.TransitionFlipFromLeft | UIViewAnimationOptions.ShowHideTransitionViews
-    */
-    
+    mapView.delegate = self
+
     setNavView()
     setTableView()
     setLocation()
@@ -100,14 +153,6 @@ class ViewController: UIViewController {
     }
   }
   
-  private func getBusinessResultsTest(){
-    Businesses = [
-      Business(data: ["name":"Yelp long name"]),
-      Business(data: ["name":"Yelp again okay, let's hope this wraps to the next line"]),
-      Business(data: ["name":"In-N-Out"])
-    ]
-  }
-  
 
   private func getBusinessResultsSuccess(#operation: AFHTTPRequestOperation!, response: AnyObject!, isFreshSearch: Bool) -> Void {
     var moreBusinesses:[Business]?
@@ -116,6 +161,7 @@ class ViewController: UIViewController {
     totalBusinesses <<< response["total"]
     
     //Loop through and add user location to models.
+    // (Since the Yelp API doesn't return / always return the distance)
     //also add models if this is a pagination request
     if let businesses = moreBusinesses {
       for business in businesses {
@@ -136,26 +182,34 @@ class ViewController: UIViewController {
     //Since the Yelp API doesn't return the distance, and the calculation
     //we are using to get the distance is slightly different, we need to manually sort
     //if it's done by "distance"
-    if let sort = FilterSettingsStore.sharedInstance.getValueFor("sort") as? Int, let Businesses = Businesses{
-      if sort == 1{
+    if let Businesses = Businesses{
+      if FilterSettingsStore.sharedInstance.isSortByDistance{
         self.Businesses = sorted(Businesses){(biz1, biz2) -> Bool in
           return biz1.distanceTo < biz2.distanceTo
         }
-
       }
     }
     
-    tableView.reloadData()
-    
-    //scroll to top if new search
-    if isFreshSearch{
-      tableView.scrollRectToVisible(CGRectMake(0, 0, 1, 1), animated: false)
+    if let latitude = latitude, let longitude = longitude{
+      let dist = FilterSettingsStore.sharedInstance.distanceFilter ?? 5
+      self.mapView.region = MKCoordinateRegionMakeWithDistance(
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+        dist,
+        dist)
     }
+    
+    if self.showingMap {
+      self.updateMapView()
+    }else{
+      tableView.reloadData()
+      //scroll to top if new search
+      if isFreshSearch{
+        tableView.scrollRectToVisible(CGRectMake(0, 0, 1, 1), animated: false)
+      }
+    }
+    
+    
 
-  }
-  
-  func refreshBusinessResults(){
-    getBusinessResults(currentSearchText ?? DefaultText, offset: 0)
   }
   
   private func getBusinessResults(searchTerm: String, offset:Int) -> Void {
@@ -177,7 +231,21 @@ class ViewController: UIViewController {
     })
   }
   
-  
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if segue.identifier == "ShowFilterViewSegue" {
+      if let destination = segue.destinationViewController as? FilterViewController{
+        destination.delegate = self
+      }
+    }
+  }
+
+}
+
+// MARK - SearchDelegate
+extension ViewController: SearchDelegate{
+  func refreshSearch(){
+    getBusinessResults(currentSearchText ?? DefaultText, offset: 0)
+  }
 }
 
 // MARK: - CLLocationManagerDelegate
@@ -202,6 +270,7 @@ extension ViewController: CLLocationManagerDelegate{
         if let addressLines = placemark?.addressDictionary["FormattedAddressLines"] as? [String]{
           self.searchLocation = ",".join(addressLines)
         }
+        self.refreshSearch()
       }
     }
   }
@@ -217,19 +286,25 @@ extension ViewController: UITableViewDelegate{
 extension ViewController: UITableViewDataSource{
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return Businesses?.count ?? 0
+    return Businesses?.count ?? 1
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCellWithIdentifier("YelpBusinessCell") as! YelpBusinessCell
+    if Businesses?.count > 0{
+      let cell = tableView.dequeueReusableCellWithIdentifier("YelpBusinessCell") as! YelpBusinessCell
     
-    if let Businesses = Businesses{
-      var index = indexPath.row
-      cell.setProperties(Businesses[index], number: index+1)
+      if let Businesses = Businesses{
+        var index = indexPath.row
+        cell.setProperties(Businesses[index], number: index+1)
+      }
+      cell.backgroundColor = UIColor.clearColor()
+      cell.sizeToFit()
+      return cell
+    }else{
+      let cell = UITableViewCell()
+      cell.textLabel?.text = "No results. Try another search"
+      return cell
     }
-    cell.backgroundColor = UIColor.clearColor()
-    cell.sizeToFit()
-    return cell
   }
   
   //Infinite scroll functionality

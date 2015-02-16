@@ -8,14 +8,21 @@
 
 import UIKit
 
+protocol SearchDelegate {
+  func refreshSearch()
+}
+
+
 class FilterViewController: UIViewController {
+  
+  let BgColor = UIColor(red: 0.92, green: 0.92, blue: 0.92, alpha: 1.0)
   
   @IBOutlet weak var searchButton: UIBarButtonItem!
   @IBOutlet weak var cancelButton: UIBarButtonItem!
   @IBOutlet weak var tableView: UITableView!
   
-  let BgColor = UIColor(red: 0.92, green: 0.92, blue: 0.92, alpha: 1.0)
-  
+  var delegate: SearchDelegate!
+
   var sections = ["Price","Distance","Sort by","Category"]
   
   var price:[[String:AnyObject?]] = [["label":"Deals","type":"checkbox", "filter":"deals_filter", "value":true]]
@@ -33,69 +40,63 @@ class FilterViewController: UIViewController {
     ["label":"Highest rated"    ,"type":"radio", "filter":"sort", "value":2]
   ]
   
+  var categories:[[String:String]] = YelpClient.sharedInstance.categories
+  
   var isShowingDistance = false
   var selectedDistanceIndex = 0
   
   var isShowingSort = false
   var selectedSortIndex = 0
   
-  var previousDealsFilter:Bool? = FilterSettingsStore.sharedInstance.getValueFor("deals_filter") as? Bool
-  var previousDistanceFilter:Double? = FilterSettingsStore.sharedInstance.getValueFor("radius_filter") as? Double
-  var previousSortFilter:Int? = FilterSettingsStore.sharedInstance.getValueFor("sort") as? Int
+  var isShowingCategories = false
+  var selectedCategoriesIndices:[Int] = []
+  
+  var previousDealsFilter:Bool? = FilterSettingsStore.sharedInstance.dealsFilter
+  var previousDistanceFilter:Double? = FilterSettingsStore.sharedInstance.distanceFilter
+  var previousSortFilter:Int? = FilterSettingsStore.sharedInstance.sortFilter
+  var previousCategoryFilter:String? = FilterSettingsStore.sharedInstance.categoryFilter
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    tableView.autoresizingMask = UIViewAutoresizing.FlexibleWidth
-    
-    view.backgroundColor = BgColor
-    tableView.backgroundColor = BgColor
-    
+    setIndices()
     setTableView()
-    
-    selectedDistanceIndex = findIndexFor(distance, value: FilterSettingsStore.sharedInstance.getValueFor("radius_filter") as? Double)
-
-    selectedSortIndex = findIndexFor(sort, value: FilterSettingsStore.sharedInstance.getValueFor("sort") as? Int)
-    
-    //TODO: CATEGORIES INDICES
-    
-    // Do any additional setup after loading the view.
   }
   
-  private func refreshResults(){
-    if let parentController = presentingViewController as? ViewController{
-      parentController.refreshBusinessResults()
-    }
+  private func setIndices(){
+    let store = FilterSettingsStore.sharedInstance
+    
+    selectedDistanceIndex = findIndexFor(distance, value: store.distanceFilter)
+    
+    selectedSortIndex = findIndexFor(sort, value: store.sortFilter)
+    
+    selectedCategoriesIndices = findIndicesFor(categories, value: store.categoryFilter)
+
   }
+  
   
   @IBAction func onCancelPress(sender: AnyObject) {
     let store = FilterSettingsStore.sharedInstance
-    if let previousDealsFitler = previousDealsFilter{
-      store.updateValueFor("deals_filter", value: previousDealsFilter)
-    }
-    if let previousDistanceFilter = previousDistanceFilter{
-      store.updateValueFor("radius_filter", value: previousDistanceFilter)
-    }
-    if let previousSortFilter = previousSortFilter {
-      store.updateValueFor("sort", value: previousSortFilter)
-    }
-    //TODO: CATEGORIES RESTORE
+    
+    store.updateValueForDeals(previousDealsFilter)
+    
+    store.updateValueForDistance(previousDistanceFilter)
+    
+    store.updateValueForSort(previousSortFilter)
+    
+    store.updateValueForCategories(previousCategoryFilter)
+
     dismissViewControllerAnimated(true, completion: nil)
   }
   
   @IBAction func onSearchPress(sender: AnyObject) {
-    refreshResults()
+    delegate.refreshSearch()
     dismissViewControllerAnimated(true, completion: nil)
-  }
-  
-  override func viewWillDisappear(animated: Bool) {
-    super.viewWillDisappear(animated)
-    //refreshResults()
   }
   
   func findIndexFor(filters: [[String:AnyObject?]], value:Double?) -> Int{
     if let value = value{
-      println("FindIndexDouble for: \(value)")
+      println("FindIndexDouble for: \(value) in \(filters)")
       for var index = 0 ; index < filters.count; ++index {
         if let defaultValue = filters[index]["value"] as? Double{
           if defaultValue == value{
@@ -120,12 +121,35 @@ class FilterViewController: UIViewController {
     return 0
   }
   
+  func findIndicesFor(filters: [[String:String]], value:String?) -> [Int]{
+    let blank:[Int] = []
+    if let value = value{
+      var indices:[Int] = []
+      println("FindIndices for: \(value)")
+      var selectedValues = split(value, {$0 == ","}, maxSplit: Int.max, allowEmptySlices: false)
+      for var index = 0 ; index < filters.count; ++index {
+        if let defaultValue = filters[index]["value"]{
+          if contains(selectedValues, defaultValue) {
+            indices.append(index)
+          }
+        }
+      }
+      return indices.count > 0 ? indices : blank
+    }
+    return blank
+  }
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
   
   private func setTableView(){
+    tableView.autoresizingMask = UIViewAutoresizing.FlexibleWidth
+    
+    view.backgroundColor = BgColor
+    tableView.backgroundColor = BgColor
+
     tableView.delegate = self
     tableView.dataSource = self
     tableView.rowHeight = UITableViewAutomaticDimension
@@ -151,10 +175,10 @@ class FilterViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension FilterViewController: UITableViewDataSource{
   
-  //deals (on/off), radius (meters), sort (best match, distance, highest rated), category
   func numberOfSectionsInTableView(tableView: UITableView) -> Int {
     return sections.count
   }
+  
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     let numRows:Int
     switch (section) {
@@ -165,8 +189,7 @@ extension FilterViewController: UITableViewDataSource{
     case 2:
       numRows = isShowingSort ? sort.count : 1
     case 3:
-      //TODO: CATEGORIES
-      numRows = 0
+      numRows = isShowingCategories ? categories.count : 1
     default:
       numRows = 0
     }
@@ -217,25 +240,47 @@ extension FilterViewController: UITableViewDataSource{
 
   
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    switch (indexPath.section) {
+    let section = indexPath.section
+    let store = FilterSettingsStore.sharedInstance
+    var cell = tableView.cellForRowAtIndexPath(indexPath) as! YelpSettingsCell
+    
+    switch (section) {
     case 1:
       if isShowingDistance {
         selectedDistanceIndex = indexPath.row
-        var cell = tableView.cellForRowAtIndexPath(indexPath) as! YelpSettingsCell
-        FilterSettingsStore.sharedInstance.updateValueFor(cell.filterType, value: cell.filterValue)
+        store.updateValueForDistance(distance[indexPath.row]["value"] as? Double)
       }
       isShowingDistance = !isShowingDistance
-      tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Fade)
+      tableView.reloadSections(NSIndexSet(index: section), withRowAnimation: UITableViewRowAnimation.Fade)
     case 2:
       if isShowingSort {
         selectedSortIndex = indexPath.row
-        var cell = tableView.cellForRowAtIndexPath(indexPath) as! YelpSettingsCell
-        FilterSettingsStore.sharedInstance.updateValueFor(cell.filterType, value: cell.filterValue)
+        store.updateValueForSort(sort[indexPath.row]["value"] as? Int)
       }
       isShowingSort = !isShowingSort
-      tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Fade)
+      tableView.reloadSections(NSIndexSet(index: section), withRowAnimation: UITableViewRowAnimation.Fade)
+    case 3:
+      if isShowingCategories {
+        let isSelected = contains(selectedCategoriesIndices, indexPath.row)
+        
+        if isSelected {
+          selectedCategoriesIndices.removeAtIndex(find(selectedCategoriesIndices, indexPath.row)!)
+        }else{
+          selectedCategoriesIndices.append(indexPath.row)
+        }
+        
+        cell.accessoryType = isSelected ? .None : .Checkmark
+        //cell.accessoryView = CircleView(frame: CGRect(x: 0, y: 0, width: 30, height: 30), isSelected: !isSelected)
+        
+        println("Toggle Category: \(cell.filterValue as? String)")
+        store.updateValueForCategories(cell.filterValue as? String)
+        println("Current categories: \(store.categoryFilter)")
+      }else{
+        isShowingCategories = true
+        tableView.reloadSections(NSIndexSet(index: section), withRowAnimation: UITableViewRowAnimation.Fade)
+      }
     default:
-      //TODO: CATEGORIES
+
       break
     }
 
@@ -243,8 +288,8 @@ extension FilterViewController: UITableViewDataSource{
   
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCellWithIdentifier("YelpSettingsCell") as! YelpSettingsCell;
-    
+    var cell = tableView.dequeueReusableCellWithIdentifier("YelpSettingsCell", forIndexPath:indexPath) as! YelpSettingsCell;
+
     switch (indexPath.section) {
     case 0:
       var filterType = price[indexPath.row]["filter"] as? String
@@ -253,6 +298,7 @@ extension FilterViewController: UITableViewDataSource{
       if let checked = FilterSettingsStore.sharedInstance.getValueFor(filterType) as? Bool{
         cell.optionSwitch.on = checked
       }
+      cell.optionSwitch.hidden = false
       cell.delegate = self
       
     case 1:
@@ -263,6 +309,7 @@ extension FilterViewController: UITableViewDataSource{
         cell.filterValue = distance[indexPath.row]["value"] as? Int
         cell.accessoryType = indexPath.row == selectedDistanceIndex ? .Checkmark : .None
       }else{
+        println("selected distance index: \(selectedDistanceIndex)")
         cell.settingsLabel.text = distance[selectedDistanceIndex]["label"] as? String
         cell.filterValue = distance[selectedDistanceIndex]["value"] as? Int
         cell.accessoryType = .DisclosureIndicator
@@ -292,29 +339,37 @@ extension FilterViewController: UITableViewDataSource{
       cell.delegate = self
 
     case 3:
-      //TODO: CATEGORIES
-      cell.settingsLabel.text = "Category"
-      cell.filterType = "category"
+      var filterType = "category_filter"
+      println("selected categories indices: \(selectedCategoriesIndices)")
+      
+      if isShowingCategories {
+        let isSelected = contains(selectedCategoriesIndices, indexPath.row)
+        cell.settingsLabel.text = categories[indexPath.row]["label"]
+        cell.filterValue =  categories[indexPath.row]["value"]
+        cell.accessoryType = isSelected ? .Checkmark : .None
+        //cell.accessoryType = .None
+        //cell.accessoryView = CircleView(frame: CGRect(x: 0, y: 0, width: 30, height: 30), isSelected: isSelected)
+      }else{
+        cell.settingsLabel.text = "Show all categories"
+        cell.filterValue = nil
+        cell.accessoryType = .DisclosureIndicator
+      }
+
+      
+      cell.optionSwitch.hidden = true
+      cell.selectionStyle = .None
+      cell.selectedBackgroundView = UIView()
+      cell.selectedBackgroundView.backgroundColor = UIColor.clearColor()
+      cell.filterType = filterType
       cell.delegate = self
 
     default:
       break
     }
     
-    return cell
-  }
-  
-  //Custom masks don't automatically resize on orientation change
-  //so this is needed
-  override func viewWillLayoutSubviews() {
-    super.viewWillLayoutSubviews()
-    let visibleCells = tableView.visibleCells() as? [YelpSettingsCell]
-    if let visibleCells  = visibleCells {
-      for cell in visibleCells {
-        cell.layoutSubviews()
-      }
-    }
+    updateCellView(cell, indexPath: indexPath)
     
+    return cell
   }
 
   
@@ -322,7 +377,7 @@ extension FilterViewController: UITableViewDataSource{
 
 // MARK: - UITableViewDelegate
 extension FilterViewController: UITableViewDelegate{
-  func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+  func updateCellView(cell: UITableViewCell, indexPath: NSIndexPath){
     if let cell = cell as? YelpSettingsCell{
       let index = indexPath.row
       let isTop = index == 0
@@ -336,13 +391,39 @@ extension FilterViewController: UITableViewDelegate{
       case 2:
         isBottom = isShowingSort ?  index == sort.count - 1 :  index == 0
       case 3:
-        isBottom =  index == 0
+        isBottom = isShowingCategories ? index == categories.count - 1 : index == 0
       default:
         isBottom =  index == 0
       }
       
+      println("\(isBottom), isTop: \(isTop)")
       cell.setBorders(isTop: isTop, isBottom: isBottom)
     }
+  }
+  
+  func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    updateCellView(cell, indexPath: indexPath)
+  }
+  
+  //Custom masks don't automatically resize on orientation change
+  //so this is needed
+  override func viewWillLayoutSubviews() {
+    super.viewWillLayoutSubviews()
+    let visibleCells = tableView.visibleCells() as? [YelpSettingsCell]
+    if let visibleCells  = visibleCells {
+      for cell in visibleCells {
+        if let indexPath = tableView.indexPathForCell(cell){
+          println("\(indexPath.section), \(indexPath.row)")
+          updateCellView(cell, indexPath: indexPath)
+        }
+        cell.layoutSubviews()
+      }
+    }
+    
+  }
+  
+  func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+    viewWillLayoutSubviews()
   }
 }
 
