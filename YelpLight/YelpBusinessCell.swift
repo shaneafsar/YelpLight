@@ -28,6 +28,15 @@ class YelpBusinessCell: UITableViewCell {
     super.awakeFromNib()
     // Initialization code
     
+    //https://vimeo.com/109911790
+    autoLayoutBug()
+    
+    bizImage.layer.cornerRadius = 3
+    bizImage.clipsToBounds = true
+  }
+  
+  private func autoLayoutBug(){
+     bizTitle.preferredMaxLayoutWidth = bizTitle.frame.size.width
   }
   
   override func setSelected(selected: Bool, animated: Bool) {
@@ -61,6 +70,12 @@ class YelpBusinessCell: UITableViewCell {
     if let title = business.title {
       bizTitle.text = "\(String(number)). \(title)"
     }
+  }
+  
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    
+    autoLayoutBug()
   }
   
 }
