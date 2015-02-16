@@ -50,7 +50,7 @@ Time spent: 18 hrs
 * Retrieve the Yelp API tokens from http://developer.yelp.com
 * Create a folder called Config in the main folder (the one that contains the Podfile)
 * In the config folder, create YelpLightConfig.xcconfig
-* Inside MyConfig.xcconfig, add:
+* Inside YelpLightConfig.xcconfig, add:
 
 ````
     YELP_LIGHT_CONSUMER_KEY = your-consumer-token
