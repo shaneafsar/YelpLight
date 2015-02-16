@@ -65,5 +65,5 @@ Credits
 * [AFNetworking](https://github.com/AFNetworking/AFNetworking)
 * [BDBOAuth1Manager](https://github.com/bdbergeron/BDBOAuth1Manager)
 * YelpClient oauth implementation:
-* [RecommendIt](https://github.com/derrickshowers/RecommendIt)
-* [iOSTwitterSwift](https://github.com/alexnj/iOSTwitterSwift)
+   * [RecommendIt](https://github.com/derrickshowers/RecommendIt)
+   * [iOSTwitterSwift](https://github.com/alexnj/iOSTwitterSwift)
