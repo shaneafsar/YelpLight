@@ -275,6 +275,8 @@ extension ViewController: CLLocationManagerDelegate{
         if let addressLines = placemark?.addressDictionary["FormattedAddressLines"] as? [String]{
           self.searchLocation = ",".join(addressLines)
         }
+        self.latitude = placemark?.location.coordinate.latitude
+        self.longitude = placemark?.location.coordinate.longitude
         self.refreshSearch()
       }
     }
